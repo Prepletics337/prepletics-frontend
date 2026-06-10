@@ -3,22 +3,56 @@
 import { useEffect, useState } from "react";
 
 export default function QuizPage() {
-  const [questions, setQuestions] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  const [currentQuestionIndex, setCurrentQuestionIndex] =
-    useState(0);
+const [questions, setQuestions] =
 
-  const [selectedAnswer, setSelectedAnswer] =
-    useState("");
+  useState<any[]>([]);
 
-  const [showResult, setShowResult] =
-    useState(false);
+const [loading, setLoading] =
 
-  const [score, setScore] = useState(0);
+  useState(true);
 
-  const [quizCompleted, setQuizCompleted] =
-    useState(false);
+const [currentQuestionIndex,
+
+  setCurrentQuestionIndex] =
+
+  useState(0);
+
+const [selectedAnswer,
+
+  setSelectedAnswer] =
+
+  useState("");
+
+const [showResult,
+
+  setShowResult] =
+
+  useState(false);
+
+const [score,
+
+  setScore] =
+
+  useState(0);
+
+const [quizCompleted,
+
+  setQuizCompleted] =
+
+  useState(false);
+
+const [reviewMode,
+
+  setReviewMode] =
+
+  useState(false);
+
+const [incorrectAnswers,
+
+  setIncorrectAnswers] =
+
+  useState<any[]>([]);
 
   useEffect(() => {
     fetch("http://2.25.173.35:3001/questions/quiz")
@@ -145,6 +179,25 @@ async function submitAnswer() {
     }
   }
 
+async function reviewIncorrectQuestions() {
+  try {
+    const response =
+      await fetch(
+        "http://2.25.173.35:3001/results/incorrect",
+      );
+
+    const data =
+      await response.json();
+
+    setIncorrectAnswers(data);
+
+    setReviewMode(true);
+
+  } catch (error) {
+    console.error(error);
+  }
+}
+
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-100 flex items-center justify-center">
@@ -154,6 +207,87 @@ async function submitAnswer() {
       </div>
     );
   }
+
+if (reviewMode) {
+  return (
+    <div className="min-h-screen bg-slate-100 p-8">
+      <div className="max-w-5xl mx-auto">
+
+        <h1 className="text-4xl font-bold mb-8 text-black">
+          Review Incorrect Questions
+        </h1>
+
+        {incorrectAnswers.map((item) => (
+          <div
+            key={item.id}
+            className="bg-white p-6 rounded-xl shadow mb-6 border"
+          >
+            <p className="mb-3">
+              <strong>Your Answer:</strong>{" "}
+              {item.selectedAnswer}
+            </p>
+
+            <p className="mb-3">
+              <strong>Correct Answer:</strong>{" "}
+              {item.correctAnswer}
+            </p>
+
+            <p className="mb-3">
+              <strong>Knowledge Area:</strong>{" "}
+              {item.knowledgeArea}
+            </p>
+          </div>
+        ))}
+
+      </div>
+    </div>
+  );
+}
+
+if (reviewMode) {
+  return (
+    <div className="min-h-screen bg-slate-100 p-8">
+      <div className="max-w-5xl mx-auto">
+
+        <h1 className="text-4xl font-bold mb-8 text-black">
+          Review Incorrect Questions
+        </h1>
+
+        {incorrectAnswers.map((item) => (
+          <div
+            key={item.id}
+            className="bg-white p-6 rounded-xl shadow mb-6 border"
+          >
+            <p className="text-xl mb-3">
+              <strong>Your Answer:</strong>{" "}
+              {item.selectedAnswer}
+            </p>
+
+            <p className="text-xl mb-3">
+              <strong>Correct Answer:</strong>{" "}
+              {item.correctAnswer}
+            </p>
+
+            <p className="text-xl mb-3">
+              <strong>Knowledge Area:</strong>{" "}
+              {item.knowledgeArea}
+            </p>
+          </div>
+        ))}
+
+        <button
+          onClick={() =>
+            window.location.reload()
+          }
+          className="bg-blue-600 text-white px-6 py-3 rounded-lg"
+        >
+          Retake Quiz
+        </button>
+
+      </div>
+    </div>
+  );
+}
 
   if (quizCompleted) {
     return (
@@ -178,6 +312,25 @@ async function submitAnswer() {
             )}
             %
           </div>
+
+
+<div className="flex gap-4 mt-8">
+
+  <button
+    onClick={reviewIncorrectQuestions}
+    className="bg-red-600 text-white px-6 py-3 rounded-lg"
+  >
+    Review Incorrect Questions
+  </button>
+
+  <button
+    onClick={() => window.location.reload()}
+    className="bg-blue-600 text-white px-6 py-3 rounded-lg"
+  >
+    Retake Quiz
+  </button>
+
+</div>         
 
         </div>
       </div>
