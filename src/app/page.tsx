@@ -1,21 +1,62 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
 export default function Home() {
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const storedUser =
+      localStorage.getItem(
+        "prepleticsUser"
+      );
+
+    if (storedUser) {
+      setUser(
+        JSON.parse(storedUser)
+      );
+    }
+  }, []);
+
+  const logout = () => {
+    localStorage.removeItem(
+      "prepleticsUser"
+    );
+
+    window.location.href = "/login";
+  };
+
   return (
     <main className="min-h-screen bg-slate-50">
       {/* Header */}
       <header className="border-b bg-white">
-        <div className="mx-auto max-w-7xl px-6 py-5">
-          <h1 className="text-3xl font-bold text-blue-600">
-            Prepletics
-          </h1>
-          <p className="text-gray-600">
-            Train Smarter. Pass Faster.
-          </p>
+        <div className="mx-auto max-w-7xl px-6 py-5 flex justify-between items-center">
+
+          <div>
+            <h1 className="text-3xl font-bold text-lime-600">
+              Prepletics
+            </h1>
+
+            <p className="text-gray-600">
+              Train Smarter. Pass Faster.
+            </p>
+          </div>
+
+          <button
+            onClick={logout}
+            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+          >
+            Logout
+          </button>
+
         </div>
       </header>
 
       <div className="mx-auto max-w-7xl px-6 py-8">
+
         <h2 className="mb-6 text-3xl font-bold">
-          Welcome Back Mohammed 👋
+          Welcome Back{" "}
+          {user?.firstName || "Student"} 👋
         </h2>
 
         {/* Stats */}
@@ -98,7 +139,7 @@ export default function Home() {
 
         {/* Actions */}
         <div className="mt-8 flex flex-wrap gap-4">
-          <button className="rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700">
+          <button className="rounded-lg bg-lime-600 px-6 py-3 font-semibold text-white hover:bg-lime-700">
             Start Quiz
           </button>
 
@@ -110,6 +151,7 @@ export default function Home() {
             Review Mistakes
           </button>
         </div>
+
       </div>
     </main>
   );
