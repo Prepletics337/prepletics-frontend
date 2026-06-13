@@ -183,7 +183,7 @@ async function reviewIncorrectQuestions() {
   try {
     const response =
       await fetch(
-        "http://2.25.173.35:3001/results/incorrect",
+        "http://2.25.173.35:3001/results/review",
       );
 
     const data =
@@ -208,41 +208,6 @@ async function reviewIncorrectQuestions() {
     );
   }
 
-if (reviewMode) {
-  return (
-    <div className="min-h-screen bg-slate-100 p-8">
-      <div className="max-w-5xl mx-auto">
-
-        <h1 className="text-4xl font-bold mb-8 text-black">
-          Review Incorrect Questions
-        </h1>
-
-        {incorrectAnswers.map((item) => (
-          <div
-            key={item.id}
-            className="bg-white p-6 rounded-xl shadow mb-6 border"
-          >
-            <p className="mb-3">
-              <strong>Your Answer:</strong>{" "}
-              {item.selectedAnswer}
-            </p>
-
-            <p className="mb-3">
-              <strong>Correct Answer:</strong>{" "}
-              {item.correctAnswer}
-            </p>
-
-            <p className="mb-3">
-              <strong>Knowledge Area:</strong>{" "}
-              {item.knowledgeArea}
-            </p>
-          </div>
-        ))}
-
-      </div>
-    </div>
-  );
-}
 
 if (reviewMode) {
   return (
@@ -253,32 +218,48 @@ if (reviewMode) {
           Review Incorrect Questions
         </h1>
 
-        {incorrectAnswers.map((item) => (
+        {incorrectAnswers.map((item, index) => (
           <div
-            key={item.id}
+            key={index}
             className="bg-white p-6 rounded-xl shadow mb-6 border"
           >
-            <p className="text-xl mb-3">
+            <h2 className="text-2xl font-bold mb-4 text-black">
+              Question
+            </h2>
+
+            <p className="text-lg mb-6 text-gray-800">
+              {item.question}
+            </p>
+
+            <p className="text-lg mb-3">
               <strong>Your Answer:</strong>{" "}
               {item.selectedAnswer}
             </p>
 
-            <p className="text-xl mb-3">
+            <p className="text-lg mb-3">
               <strong>Correct Answer:</strong>{" "}
               {item.correctAnswer}
             </p>
 
-            <p className="text-xl mb-3">
+            <p className="text-lg mb-3">
               <strong>Knowledge Area:</strong>{" "}
               {item.knowledgeArea}
             </p>
+
+            <div className="mt-6 bg-blue-50 p-4 rounded-lg">
+              <h3 className="font-bold text-xl mb-2">
+                PMI Explanation
+              </h3>
+
+              <p className="text-lg">
+                {item.explanation}
+              </p>
+            </div>
           </div>
         ))}
 
         <button
-          onClick={() =>
-            window.location.reload()
-          }
+          onClick={() => window.location.reload()}
           className="bg-blue-600 text-white px-6 py-3 rounded-lg"
         >
           Retake Quiz
@@ -288,6 +269,7 @@ if (reviewMode) {
     </div>
   );
 }
+
 
   if (quizCompleted) {
     return (

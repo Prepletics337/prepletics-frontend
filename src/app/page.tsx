@@ -4,31 +4,56 @@ import { useEffect, useState } from "react";
 
 export default function Home() {
   const [user, setUser] = useState<any>(null);
+  const [stats, setStats] = useState<any>(null);
+  const [knowledgeAreas, setKnowledgeAreas] =
+    useState<any[]>([]);
 
   useEffect(() => {
     const storedUser =
       localStorage.getItem(
-        "prepleticsUser"
+        "prepleticsUser",
       );
 
     if (storedUser) {
       setUser(
-        JSON.parse(storedUser)
+        JSON.parse(storedUser),
       );
     }
+
+    fetch(
+      "http://2.25.173.35:3001/results/stats",
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        setStats(data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+    fetch(
+      "http://2.25.173.35:3001/results/knowledge-areas",
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        setKnowledgeAreas(data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }, []);
 
   const logout = () => {
     localStorage.removeItem(
-      "prepleticsUser"
+      "prepleticsUser",
     );
 
-    window.location.href = "/login";
+    window.location.href =
+      "/login";
   };
 
   return (
     <main className="min-h-screen bg-slate-50">
-      {/* Header */}
       <header className="border-b bg-white">
         <div className="mx-auto max-w-7xl px-6 py-5 flex justify-between items-center">
 
@@ -59,14 +84,15 @@ export default function Home() {
           {user?.firstName || "Student"} 👋
         </h2>
 
-        {/* Stats */}
         <div className="grid gap-6 md:grid-cols-4">
+
           <div className="rounded-xl bg-white p-6 shadow">
             <p className="text-sm text-gray-500">
               Readiness Score
             </p>
+
             <h3 className="mt-2 text-4xl font-bold text-green-600">
-              72%
+              {stats?.readinessScore ?? 0}%
             </h3>
           </div>
 
@@ -74,72 +100,87 @@ export default function Home() {
             <p className="text-sm text-gray-500">
               Questions Answered
             </p>
+
             <h3 className="mt-2 text-4xl font-bold">
-              1,245
+              {stats?.totalAnswered ?? 0}
             </h3>
           </div>
 
           <div className="rounded-xl bg-white p-6 shadow">
             <p className="text-sm text-gray-500">
-              Mock Exams
+              Correct Answers
             </p>
+
             <h3 className="mt-2 text-4xl font-bold">
-              12
+              {stats?.correctAnswers ?? 0}
             </h3>
           </div>
 
           <div className="rounded-xl bg-white p-6 shadow">
             <p className="text-sm text-gray-500">
-              Study Streak
+              Incorrect Answers
             </p>
+
             <h3 className="mt-2 text-4xl font-bold">
-              14 Days
+              {stats?.incorrectAnswers ?? 0}
             </h3>
           </div>
+
         </div>
 
-        {/* Knowledge Areas */}
         <div className="mt-8 rounded-xl bg-white p-6 shadow">
+
           <h3 className="mb-4 text-xl font-bold">
-            Knowledge Areas
+            Knowledge Area Performance
           </h3>
 
-          <div className="space-y-4">
-            <div>
-              <div className="mb-1 flex justify-between">
-                <span>People</span>
-                <span>82%</span>
-              </div>
-              <div className="h-3 rounded bg-gray-200">
-                <div className="h-3 w-[82%] rounded bg-green-500"></div>
-              </div>
-            </div>
+          <div className="space-y-5">
 
-            <div>
-              <div className="mb-1 flex justify-between">
-                <span>Process</span>
-                <span>67%</span>
-              </div>
-              <div className="h-3 rounded bg-gray-200">
-                <div className="h-3 w-[67%] rounded bg-yellow-500"></div>
-              </div>
-            </div>
+            {knowledgeAreas.map((area) => (
+              <div
+                key={area.knowledgeArea}
+              >
 
-            <div>
-              <div className="mb-1 flex justify-between">
-                <span>Business Environment</span>
-                <span>74%</span>
+                <div className="mb-1 flex justify-between">
+
+                  <span>
+                    {area.knowledgeArea}
+                  </span>
+
+                  <span>
+                    {area.percentage}%
+                  </span>
+
+                </div>
+
+                <div className="h-3 rounded bg-gray-200">
+
+                  <div
+                    className="h-3 rounded bg-green-500"
+                    style={{
+                      width:
+                        `${area.percentage}%`,
+                    }}
+                  />
+
+                </div>
+
               </div>
-              <div className="h-3 rounded bg-gray-200">
-                <div className="h-3 w-[74%] rounded bg-blue-500"></div>
-              </div>
-            </div>
+            ))}
+
           </div>
+
         </div>
 
-        {/* Actions */}
         <div className="mt-8 flex flex-wrap gap-4">
-          <button className="rounded-lg bg-lime-600 px-6 py-3 font-semibold text-white hover:bg-lime-700">
+
+          <button
+            className="rounded-lg bg-lime-600 px-6 py-3 font-semibold text-white hover:bg-lime-700"
+            onClick={() =>
+              (window.location.href =
+                "/quiz")
+            }
+          >
             Start Quiz
           </button>
 
@@ -150,6 +191,7 @@ export default function Home() {
           <button className="rounded-lg bg-slate-800 px-6 py-3 font-semibold text-white hover:bg-slate-900">
             Review Mistakes
           </button>
+
         </div>
 
       </div>

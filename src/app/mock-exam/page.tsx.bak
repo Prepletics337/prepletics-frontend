@@ -1,0 +1,114 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
+export default function MockExamPage() {
+  const [questions, setQuestions] =
+    useState<any[]>([]);
+
+  const [currentQuestion, setCurrentQuestion] =
+    useState(0);
+
+  useEffect(() => {
+    fetch(
+     "/api/questions/mock-exam",
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        setQuestions(data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
+
+  if (questions.length === 0) {
+    return (
+      <div className="p-10">
+        Loading Exam...
+      </div>
+    );
+  }
+
+  const question =
+    questions[currentQuestion];
+
+  return (
+    <main className="min-h-screen bg-slate-100 p-8">
+
+      <div className="mx-auto max-w-4xl">
+
+        <h1 className="text-4xl font-bold mb-4">
+          PMP Mock Exam
+        </h1>
+
+        <p className="mb-8 text-gray-600">
+          Question {currentQuestion + 1}
+          {" "}of{" "}
+          {questions.length}
+        </p>
+
+        <div className="bg-white rounded-xl shadow p-8">
+
+          <h2 className="text-xl font-semibold mb-6">
+            {question.question}
+          </h2>
+
+          <div className="space-y-4">
+
+            <button className="w-full text-left border rounded-lg p-4 hover:bg-slate-50">
+              A. {question.optionA}
+            </button>
+
+            <button className="w-full text-left border rounded-lg p-4 hover:bg-slate-50">
+              B. {question.optionB}
+            </button>
+
+            <button className="w-full text-left border rounded-lg p-4 hover:bg-slate-50">
+              C. {question.optionC}
+            </button>
+
+            <button className="w-full text-left border rounded-lg p-4 hover:bg-slate-50">
+              D. {question.optionD}
+            </button>
+
+          </div>
+
+        </div>
+
+        <div className="mt-8 flex justify-between">
+
+          <button
+            disabled={currentQuestion === 0}
+            onClick={() =>
+              setCurrentQuestion(
+                currentQuestion - 1,
+              )
+            }
+            className="bg-slate-700 text-white px-6 py-3 rounded-lg disabled:opacity-50"
+          >
+            Previous
+          </button>
+
+          <button
+            disabled={
+              currentQuestion ===
+              questions.length - 1
+            }
+            onClick={() =>
+              setCurrentQuestion(
+                currentQuestion + 1,
+              )
+            }
+            className="bg-green-600 text-white px-6 py-3 rounded-lg disabled:opacity-50"
+          >
+            Next
+          </button>
+
+        </div>
+
+      </div>
+
+    </main>
+  );
+}
