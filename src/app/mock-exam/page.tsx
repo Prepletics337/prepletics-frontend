@@ -21,6 +21,9 @@ const [examFinished, setExamFinished] =
 const [examResults, setExamResults] =
   useState<any>(null);
 
+const [reviewQuestions, setReviewQuestions] =
+  useState<any[]>([]);
+
   const [timeLeft, setTimeLeft] =
     useState(230 * 60);
 const [examPaused, setExamPaused] =
@@ -34,6 +37,51 @@ const [breakNumber, setBreakNumber] =
 
 const [breakTimeLeft, setBreakTimeLeft] =
   useState(10 * 60);
+
+useEffect(() => {
+
+  const savedExam =
+
+    localStorage.getItem(
+
+      "prepletics-mock-exam",
+
+    );
+
+  if (!savedExam) return;
+
+  const parsed =
+
+    JSON.parse(savedExam);
+
+  setCurrentQuestion(
+
+    parsed.currentQuestion || 0,
+
+  );
+
+  setAnswers(
+
+    parsed.answers || {},
+
+  );
+
+  setFlaggedQuestions(
+
+    parsed.flaggedQuestions || [],
+
+  );
+
+  setTimeLeft(
+
+    parsed.timeLeft ||
+
+      230 * 60,
+
+  );
+
+}, []);
+
 useEffect(() => {
 
   fetch(
@@ -60,6 +108,37 @@ useEffect(() => {
     });
 
 }, []);
+
+useEffect(() => {
+
+  localStorage.setItem(
+    "prepletics-mock-exam",
+
+    JSON.stringify({
+
+      currentQuestion,
+
+      answers,
+
+      flaggedQuestions,
+
+      timeLeft,
+
+    }),
+  );
+
+}, [
+
+  currentQuestion,
+
+  answers,
+
+  flaggedQuestions,
+
+  timeLeft,
+
+]);
+
 
 useEffect(() => {
 
@@ -161,6 +240,121 @@ if (examFinished) {
             </div>
 
           </div>
+
+<div className="mt-10">
+
+              <h2 className="text-2xl font-bold mb-6">
+
+                Review Questions
+
+              </h2>
+
+              <div className="space-y-6">
+
+                {reviewQuestions.map(
+
+                  (
+
+                    reviewQuestion,
+
+                    index,
+
+                  ) => (
+
+                    <div
+
+                      key={
+
+                        reviewQuestion.id
+
+                      }
+
+                      className="border rounded-xl p-6 bg-slate-50"
+
+                    >
+
+                      <div className="font-semibold mb-4">
+
+                        Question {index + 1}
+
+                      </div>
+
+                      <div className="mb-4">
+
+                        {
+
+                          reviewQuestion.question
+
+                        }
+
+                      </div>
+
+                      <div
+
+                        className={`mb-2 font-medium ${
+
+                          reviewQuestion.isCorrect
+
+                            ? "text-green-700"
+
+                            : "text-red-700"
+
+                        }`}
+
+                      >
+
+                        Your Answer:
+
+                        {" "}
+
+                        {
+
+                          reviewQuestion.userAnswer ||
+
+                          "Not Answered"
+
+                        }
+
+                      </div>
+
+                      <div className="mb-2 text-green-700 font-medium">
+
+                        Correct Answer:
+
+                        {" "}
+
+                        {
+
+                          reviewQuestion.correctAnswer
+
+                        }
+
+                      </div>
+
+                      <div className="text-slate-700">
+
+                        Explanation:
+
+                        {" "}
+
+                        {
+
+                          reviewQuestion.explanation
+
+                        }
+
+                      </div>
+
+                    </div>
+
+                  ),
+
+                )}
+
+              </div>
+
+            </div>
+
 
         </div>
 
@@ -285,6 +479,7 @@ function startBreak(
   breakNum: number,
 ) {
 
+
   setBreakNumber(breakNum);
 
   setExamPaused(true);
@@ -307,17 +502,33 @@ function finishExam() {
 
   let correct = 0;
 
+  const review: any[] = [];
+
   questions.forEach(
     (question) => {
 
-      if (
-        answers[question.id] ===
-        question.correctAnswer
-      ) {
+      const userAnswer =
+        answers[question.id];
+
+      const isCorrect =
+        userAnswer ===
+        question.correctAnswer;
+
+      if (isCorrect) {
 
         correct++;
 
       }
+
+      review.push({
+
+        ...question,
+
+        userAnswer,
+
+        isCorrect,
+
+      });
 
     },
   );
@@ -332,11 +543,19 @@ function finishExam() {
         100,
     );
 
+  setReviewQuestions(
+    review,
+  );
+
   setExamResults({
     correct,
     incorrect,
     score,
   });
+
+  localStorage.removeItem(
+    "prepletics-mock-exam",
+  );
 
   setExamFinished(true);
 
