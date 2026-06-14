@@ -21,6 +21,9 @@ const [examFinished, setExamFinished] =
 const [examResults, setExamResults] =
   useState<any>(null);
 
+const [reviewFilter, setReviewFilter] =
+  useState("all");
+
 const [reviewQuestions, setReviewQuestions] =
   useState<any[]>([]);
 
@@ -204,6 +207,37 @@ useEffect(() => {
       </div>
     );
   }
+const filteredReviewQuestions =
+
+  reviewQuestions.filter(
+
+    (question) => {
+
+      if (
+
+        reviewFilter === "incorrect"
+
+      ) {
+
+        return !question.isCorrect;
+
+      }
+
+      if (
+
+        reviewFilter === "unanswered"
+
+      ) {
+
+        return !question.userAnswer;
+
+      }
+
+      return true;
+
+    },
+
+  );
 
 if (examFinished) {
 
@@ -249,9 +283,58 @@ if (examFinished) {
 
               </h2>
 
+<div className="flex gap-4 mb-6">
+
+  <button
+    onClick={() =>
+      setReviewFilter("all")
+    }
+    className={`px-4 py-2 rounded-lg ${
+      reviewFilter === "all"
+        ? "bg-blue-600 text-white"
+        : "bg-slate-200"
+    }`}
+  >
+    All Questions
+  </button>
+
+  <button
+    onClick={() =>
+      setReviewFilter(
+        "incorrect",
+      )
+    }
+    className={`px-4 py-2 rounded-lg ${
+      reviewFilter === "incorrect"
+        ? "bg-blue-600 text-white"
+        : "bg-slate-200"
+    }`}
+  >
+    Incorrect Only
+  </button>
+
+  <button
+    onClick={() =>
+      setReviewFilter(
+        "unanswered",
+      )
+    }
+    className={`px-4 py-2 rounded-lg ${
+      reviewFilter === "unanswered"
+        ? "bg-blue-600 text-white"
+        : "bg-slate-200"
+    }`}
+  >
+    Unanswered
+  </button>
+
+</div>
+
+
+
               <div className="space-y-6">
 
-                {reviewQuestions.map(
+                {filteredReviewQuestions.map(
 
                   (
 
