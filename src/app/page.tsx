@@ -1,12 +1,25 @@
 "use client";
 
+
 import { useEffect, useState } from "react";
+
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 export default function Home() {
   const [user, setUser] = useState<any>(null);
   const [stats, setStats] = useState<any>(null);
   const [knowledgeAreas, setKnowledgeAreas] =
     useState<any[]>([]);
+const [examHistory, setExamHistory] =
+  useState<any[]>([]);
 
   useEffect(() => {
     const storedUser =
@@ -19,6 +32,18 @@ export default function Home() {
         JSON.parse(storedUser),
       );
     }
+const savedHistory =
+  localStorage.getItem(
+    "prepletics-exam-history",
+  );
+
+if (savedHistory) {
+
+  setExamHistory(
+    JSON.parse(savedHistory),
+  );
+
+}
 
     fetch(
       "http://2.25.173.35:3001/results/stats",
@@ -43,15 +68,22 @@ export default function Home() {
       });
   }, []);
 
-  const logout = () => {
-    localStorage.removeItem(
-      "prepleticsUser",
-    );
+const logout = () => {
+  localStorage.removeItem(
+    "prepleticsUser",
+  );
 
-    window.location.href =
-      "/login";
-  };
+  window.location.href =
+    "/login";
+};
 
+const chartData =
+  examHistory.map(
+    (exam, index) => ({
+      attempt: `Mock ${index + 1}`,
+      score: exam.score,
+    }),
+  );
   return (
     <main className="min-h-screen bg-slate-50">
       <header className="border-b bg-white">
@@ -171,6 +203,136 @@ export default function Home() {
           </div>
 
         </div>
+    <div className="mt-8 rounded-xl bg-white p-6 shadow">    
+
+<h3 className="mb-4 text-xl font-bold">
+  Progress Trend
+</h3>
+
+{examHistory.length === 0 ? (
+
+  <p className="text-gray-500">
+    Complete a mock exam to see progress.
+  </p>
+
+) : (
+
+  <div className="h-80">
+
+    <ResponsiveContainer
+      width="100%"
+      height="100%"
+    >
+
+      <LineChart
+        data={chartData}
+      >
+
+        <CartesianGrid
+          strokeDasharray="3 3"
+        />
+
+        <XAxis
+          dataKey="attempt"
+        />
+
+        <YAxis
+          domain={[0, 100]}
+        />
+
+        <Tooltip />
+
+        <Line
+          type="monotone"
+          dataKey="score"
+          stroke="#16a34a"
+          strokeWidth={3}
+        />
+
+      </LineChart>
+
+    </ResponsiveContainer>
+
+  </div>
+
+)}
+
+
+</div>
+<div className="mt-8 rounded-xl bg-white p-6 shadow">
+  <h3 className="mb-4 text-xl font-bold">
+    Exam History
+  </h3>
+
+  {examHistory.length === 0 ? (
+
+    <p className="text-gray-500">
+      No exams completed yet.
+    </p>
+
+  ) : (
+
+    <table className="w-full">
+
+      <thead>
+
+        <tr className="border-b">
+
+          <th className="text-left py-2">
+            Attempt
+          </th>
+
+          <th className="text-left py-2">
+            Date
+          </th>
+
+          <th className="text-left py-2">
+            Score
+          </th>
+
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+        {examHistory.map(
+          (
+            exam,
+            index,
+          ) => (
+
+            <tr
+              key={index}
+              className="border-b"
+            >
+
+              <td className="py-2">
+                Mock #{index + 1}
+              </td>
+
+              <td className="py-2">
+                {exam.date}
+              </td>
+
+              <td className="py-2 font-semibold">
+                {exam.score}%
+              </td>
+
+            </tr>
+
+          ),
+        )}
+
+      </tbody>
+
+    </table>
+
+  )}
+
+</div>
+
+
 
         <div className="mt-8 flex flex-wrap gap-4">
 
@@ -188,9 +350,15 @@ export default function Home() {
             Take Mock Exam
           </button>
 
-          <button className="rounded-lg bg-slate-800 px-6 py-3 font-semibold text-white hover:bg-slate-900">
-            Review Mistakes
-          </button>
+         <button
+  className="rounded-lg bg-slate-800 px-6 py-3 font-semibold text-white hover:bg-slate-900"
+  onClick={() =>
+    (window.location.href =
+      "/review-mistakes")
+  }
+>
+  Review Mistakes
+</button>
 
         </div>
 

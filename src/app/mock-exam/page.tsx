@@ -629,7 +629,58 @@ function finishExam() {
   setReviewQuestions(
     review,
   );
+const incorrectQuestions =
 
+  review.filter(
+
+    (question) =>
+
+      !question.isCorrect,
+
+  );
+
+localStorage.setItem(
+
+  "prepletics-review-mistakes",
+
+  JSON.stringify(
+
+    incorrectQuestions,
+
+  ),
+
+);
+
+console.log(
+  "Saving exam history",
+  {
+    score,
+    correct,
+    incorrect,
+  },
+);
+
+const existingHistory =
+  JSON.parse(
+    localStorage.getItem(
+      "prepletics-exam-history",
+    ) || "[]",
+  );
+
+existingHistory.push({
+  date:
+    new Date().toLocaleDateString(),
+  score,
+  correct,
+  incorrect,
+});
+
+localStorage.setItem(
+  "prepletics-exam-history",
+  JSON.stringify(
+    existingHistory,
+  ),
+);
   setExamResults({
     correct,
     incorrect,
