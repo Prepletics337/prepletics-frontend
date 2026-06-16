@@ -11,6 +11,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  ReferenceLine,
 } from "recharts";
 
 export default function Home() {
@@ -18,8 +19,17 @@ export default function Home() {
   const [stats, setStats] = useState<any>(null);
   const [knowledgeAreas, setKnowledgeAreas] =
     useState<any[]>([]);
+const [
+  knowledgeAreaPerformance,
+  setKnowledgeAreaPerformance,
+] = useState<any[]>([]);
 const [examHistory, setExamHistory] =
   useState<any[]>([]);
+const [strongestArea, setStrongestArea] =
+  useState<any>(null);
+
+const [weakestArea, setWeakestArea] =
+  useState<any>(null);
 
   useEffect(() => {
     const storedUser =
@@ -44,6 +54,81 @@ if (savedHistory) {
   );
 
 }
+
+const savedAreas =
+  localStorage.getItem(
+    "prepletics-knowledge-areas",
+  );
+
+if (savedAreas) {
+
+  const parsed =
+    JSON.parse(
+      savedAreas,
+    );
+
+  const formatted =
+    Object.entries(
+      parsed,
+    ).map(
+      ([name, stats]: any) => ({
+        knowledgeArea:
+          name,
+        percentage:
+          Math.round(
+            (stats.correct /
+              stats.total) *
+              100,
+          ),
+      }),
+    );
+
+  setKnowledgeAreaPerformance(
+    formatted,
+  );
+
+if (formatted.length > 0) {
+
+    const strongest =
+
+      [...formatted].sort(
+
+        (a, b) =>
+
+          b.percentage -
+
+          a.percentage,
+
+      )[0];
+
+    const weakest =
+
+      [...formatted].sort(
+
+        (a, b) =>
+
+          a.percentage -
+
+          b.percentage,
+
+      )[0];
+
+    setStrongestArea(
+
+      strongest,
+
+    );
+
+    setWeakestArea(
+
+      weakest,
+
+    );
+
+  }
+
+}
+
 
     fetch(
       "http://2.25.173.35:3001/results/stats",
@@ -84,6 +169,47 @@ const chartData =
       score: exam.score,
     }),
   );
+const scores =
+  examHistory.map(
+    (exam) => exam.score,
+  );
+
+const bestScore =
+  scores.length > 0
+    ? Math.max(...scores)
+    : 0;
+
+const lastScore =
+  scores.length > 0
+    ? scores[scores.length - 1]
+    : 0;
+
+const averageScore =
+  scores.length > 0
+    ? Math.round(
+        scores.reduce(
+          (sum, score) =>
+            sum + score,
+          0,
+        ) / scores.length,
+      )
+    : 0;
+
+const mocksCompleted =
+  examHistory.length;
+
+const readinessTarget = 80;
+
+const currentReadiness =
+  averageScore;
+
+const readinessGap =
+  Math.max(
+    0,
+    readinessTarget -
+      currentReadiness,
+  );
+
   return (
     <main className="min-h-screen bg-slate-50">
       <header className="border-b bg-white">
@@ -159,6 +285,180 @@ const chartData =
           </div>
 
         </div>
+<div className="mt-6 grid gap-6 md:grid-cols-4">
+
+  <div className="rounded-xl bg-white p-6 shadow">
+    <p className="text-sm text-gray-500">
+      Best Mock Score
+    </p>
+
+    <h3 className="mt-2 text-4xl font-bold text-green-600">
+      {bestScore}%
+    </h3>
+  </div>
+
+  <div className="rounded-xl bg-white p-6 shadow">
+    <p className="text-sm text-gray-500">
+      Average Score
+    </p>
+
+    <h3 className="mt-2 text-4xl font-bold">
+      {averageScore}%
+    </h3>
+  </div>
+
+  <div className="rounded-xl bg-white p-6 shadow">
+    <p className="text-sm text-gray-500">
+      Last Mock Score
+    </p>
+
+    <h3 className="mt-2 text-4xl font-bold">
+      {lastScore}%
+    </h3>
+  </div>
+
+  <div className="rounded-xl bg-white p-6 shadow">
+    <p className="text-sm text-gray-500">
+      Mocks Completed
+    </p>
+
+    <h3 className="mt-2 text-4xl font-bold">
+      {mocksCompleted}
+    </h3>
+  </div>
+
+</div>
+
+<div className="grid gap-6 md:grid-cols-4 mt-6">
+
+  <div className="rounded-xl bg-white p-6 shadow">
+    <p className="text-sm text-gray-500">
+      Current Readiness
+    </p>
+
+    <h3 className="mt-2 text-4xl font-bold text-green-600">
+      {currentReadiness}%
+    </h3>
+  </div>
+
+  <div className="rounded-xl bg-white p-6 shadow">
+    <p className="text-sm text-gray-500">
+      PMP Target
+    </p>
+
+    <h3 className="mt-2 text-4xl font-bold">
+      {readinessTarget}%
+    </h3>
+  </div>
+
+  <div className="rounded-xl bg-white p-6 shadow">
+    <p className="text-sm text-gray-500">
+      Gap Remaining
+    </p>
+
+    <h3 className="mt-2 text-4xl font-bold text-red-600">
+      {readinessGap}%
+    </h3>
+  </div>
+
+  <div className="rounded-xl bg-white p-6 shadow">
+    <p className="text-sm text-gray-500">
+      Exams Remaining
+    </p>
+
+    <h3 className="mt-2 text-4xl font-bold">
+      {Math.ceil(
+        readinessGap / 10,
+      )}
+    </h3>
+  </div>
+
+</div>
+
+<div className="mt-8 grid gap-6 md:grid-cols-2">
+
+  <div className="rounded-xl bg-white p-6 shadow">
+
+    <p className="text-sm text-gray-500">
+      Strongest Area
+    </p>
+
+    <h3 className="mt-2 text-2xl font-bold text-green-600">
+      {strongestArea?.knowledgeArea ||
+        "N/A"}
+    </h3>
+
+    <p className="text-gray-600">
+      {strongestArea?.percentage || 0}%
+    </p>
+
+  </div>
+
+  <div className="rounded-xl bg-white p-6 shadow">
+
+    <p className="text-sm text-gray-500">
+      Weakest Area
+    </p>
+
+    <h3 className="mt-2 text-2xl font-bold text-red-600">
+      {weakestArea?.knowledgeArea ||
+        "N/A"}
+    </h3>
+
+    <p className="text-gray-600">
+      {weakestArea?.percentage || 0}%
+    </p>
+
+  </div>
+
+</div>
+
+<div className="mt-8 rounded-xl bg-white p-6 shadow">
+
+  <h3 className="mb-4 text-xl font-bold">
+    Recommended Focus Areas
+  </h3>
+
+  <div className="space-y-3">
+
+    {knowledgeAreaPerformance
+      .sort(
+        (a, b) =>
+          a.percentage -
+          b.percentage,
+      )
+      .slice(0, 3)
+      .map(
+        (
+          area,
+          index,
+        ) => (
+          <div
+            key={
+              area.knowledgeArea
+            }
+            className="flex justify-between border-b pb-2"
+          >
+            <span>
+              {index + 1}.{" "}
+              {
+                area.knowledgeArea
+              }
+            </span>
+
+            <span className="font-semibold text-red-600">
+              {
+                area.percentage
+              }
+              %
+            </span>
+          </div>
+        ),
+      )}
+
+  </div>
+
+</div>
 
         <div className="mt-8 rounded-xl bg-white p-6 shadow">
 
@@ -168,7 +468,15 @@ const chartData =
 
           <div className="space-y-5">
 
-            {knowledgeAreas.map((area) => (
+            {knowledgeAreaPerformance.sort(
+
+    (a, b) =>
+
+      b.percentage -
+
+      a.percentage,
+
+  ).map((area) => (
               <div
                 key={area.knowledgeArea}
               >
@@ -241,6 +549,12 @@ const chartData =
         />
 
         <Tooltip />
+<ReferenceLine
+  y={80}
+  stroke="red"
+  strokeDasharray="5 5"
+  label="PMP Ready"
+/>
 
         <Line
           type="monotone"

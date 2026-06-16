@@ -586,6 +586,14 @@ function finishExam() {
   let correct = 0;
 
   const review: any[] = [];
+const knowledgeAreaStats:
+  Record<
+    string,
+    {
+      correct: number;
+      total: number;
+    }
+  > = {};
 
   questions.forEach(
     (question) => {
@@ -596,6 +604,28 @@ function finishExam() {
       const isCorrect =
         userAnswer ===
         question.correctAnswer;
+
+const area =
+  question.knowledgeArea;
+
+if (
+  !knowledgeAreaStats[area]
+) {
+  knowledgeAreaStats[area] = {
+    correct: 0,
+    total: 0,
+  };
+}
+
+knowledgeAreaStats[
+  area
+].total++;
+
+if (isCorrect) {
+  knowledgeAreaStats[
+    area
+  ].correct++;
+}
 
       if (isCorrect) {
 
@@ -681,6 +711,13 @@ localStorage.setItem(
     existingHistory,
   ),
 );
+localStorage.setItem(
+  "prepletics-knowledge-areas",
+  JSON.stringify(
+    knowledgeAreaStats,
+  ),
+);
+
   setExamResults({
     correct,
     incorrect,
