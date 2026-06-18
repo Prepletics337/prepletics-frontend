@@ -581,7 +581,7 @@ function resumeExam() {
 
 }
 
-function finishExam() {
+async function finishExam() {
 
   let correct = 0;
 
@@ -717,6 +717,54 @@ localStorage.setItem(
     knowledgeAreaStats,
   ),
 );
+
+const user =
+  JSON.parse(
+    localStorage.getItem(
+      "prepleticsUser",
+    ) || "{}",
+  );
+
+try {
+
+  await fetch(
+    "/api/exam-results",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type":
+          "application/json",
+      },
+      body: JSON.stringify({
+        userId:
+          user.id || 1,
+        score,
+        correctAnswers:
+          correct,
+        incorrectAnswers:
+          incorrect,
+        questionsAnswered:
+          questions.length,
+        knowledgeAreas:
+          knowledgeAreaStats,
+        examType:
+          "MOCK_EXAM",
+      }),
+    },
+  );
+
+  console.log(
+    "Exam saved to database",
+  );
+
+} catch (error) {
+
+  console.error(
+    "Database save failed",
+    error,
+  );
+
+}
 
   setExamResults({
     correct,

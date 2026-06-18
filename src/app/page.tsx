@@ -15,8 +15,6 @@ import {
 } from "recharts";
 
 export default function Home() {
-  const [user, setUser] = useState<any>(null);
-  const [stats, setStats] = useState<any>(null);
   const [knowledgeAreas, setKnowledgeAreas] =
     useState<any[]>([]);
 const [
@@ -31,11 +29,32 @@ const [strongestArea, setStrongestArea] =
 const [weakestArea, setWeakestArea] =
   useState<any>(null);
 
+const [user, setUser] = useState<any>(null);
+
+const [dashboardStats, setDashboardStats] =
+  useState<any>({
+    totalExams: 0,
+    bestScore: 0,
+    averageScore: 0,
+    lastScore: 0,
+    questionsAnswered: 0,
+    correctAnswers: 0,
+    incorrectAnswers: 0,
+    readinessScore: 0,
+  });
+
   useEffect(() => {
     const storedUser =
       localStorage.getItem(
         "prepleticsUser",
       );
+fetch(
+  "/api/exam-results/stats",
+)
+  .then((res) => res.json())
+  .then((data) => {
+    setDashboardStats(data);
+  });
 
     if (storedUser) {
       setUser(
@@ -128,29 +147,6 @@ if (formatted.length > 0) {
   }
 
 }
-
-
-    fetch(
-      "http://2.25.173.35:3001/results/stats",
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setStats(data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-
-    fetch(
-      "http://2.25.173.35:3001/results/knowledge-areas",
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setKnowledgeAreas(data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
   }, []);
 
 const logout = () => {
@@ -175,33 +171,29 @@ const scores =
   );
 
 const bestScore =
-  scores.length > 0
-    ? Math.max(...scores)
-    : 0;
+  dashboardStats.bestScore;
 
 const lastScore =
-  scores.length > 0
-    ? scores[scores.length - 1]
-    : 0;
+  dashboardStats.lastScore;
 
 const averageScore =
-  scores.length > 0
-    ? Math.round(
-        scores.reduce(
-          (sum, score) =>
-            sum + score,
-          0,
-        ) / scores.length,
-      )
-    : 0;
+  dashboardStats.averageScore;
 
 const mocksCompleted =
-  examHistory.length;
-
-const readinessTarget = 80;
+  dashboardStats.totalExams;
 
 const currentReadiness =
-  averageScore;
+  dashboardStats.readinessScore;
+
+const questionsAnswered =
+  dashboardStats.questionsAnswered;
+
+const correctAnswers =
+  dashboardStats.correctAnswers;
+
+const incorrectAnswers =
+  dashboardStats.incorrectAnswers;
+const readinessTarget = 80;
 
 const readinessGap =
   Math.max(
@@ -210,6 +202,12 @@ const readinessGap =
       currentReadiness,
   );
 
+const readinessStatus =
+  currentReadiness >= 80
+    ? "Exam Ready"
+    : currentReadiness >= 60
+    ? "Almost Ready"
+    : "Not Ready";
   return (
     <main className="min-h-screen bg-slate-50">
       <header className="border-b bg-white">
@@ -250,7 +248,7 @@ const readinessGap =
             </p>
 
             <h3 className="mt-2 text-4xl font-bold text-green-600">
-              {stats?.readinessScore ?? 0}%
+              {currentReadiness}%
             </h3>
           </div>
 
@@ -260,17 +258,16 @@ const readinessGap =
             </p>
 
             <h3 className="mt-2 text-4xl font-bold">
-              {stats?.totalAnswered ?? 0}
+              {questionsAnswered}
             </h3>
           </div>
-
           <div className="rounded-xl bg-white p-6 shadow">
             <p className="text-sm text-gray-500">
               Correct Answers
             </p>
 
             <h3 className="mt-2 text-4xl font-bold">
-              {stats?.correctAnswers ?? 0}
+              {correctAnswers}
             </h3>
           </div>
 
@@ -280,7 +277,7 @@ const readinessGap =
             </p>
 
             <h3 className="mt-2 text-4xl font-bold">
-              {stats?.incorrectAnswers ?? 0}
+              {incorrectAnswers}
             </h3>
           </div>
 
@@ -339,7 +336,19 @@ const readinessGap =
     <h3 className="mt-2 text-4xl font-bold text-green-600">
       {currentReadiness}%
     </h3>
-  </div>
+  <p
+  className={`mt-2 font-semibold ${
+    currentReadiness >= 80
+      ? "text-green-600"
+      : currentReadiness >= 60
+      ? "text-yellow-600"
+      : "text-red-600"
+  }`}
+>
+  {readinessStatus}
+</p> 
+
+ </div>
 
   <div className="rounded-xl bg-white p-6 shadow">
     <p className="text-sm text-gray-500">
@@ -389,7 +398,7 @@ const readinessGap =
     </h3>
 
     <p className="text-gray-600">
-      {strongestArea?.percentage || 0}%
+      {strongestArea?.percentage || 0}
     </p>
 
   </div>
@@ -459,6 +468,65 @@ const readinessGap =
   </div>
 
 </div>
+ <h3 className="mb-4 text-xl font-bold">
+
+    PMP Readiness Assessment
+
+  </h3>
+
+  <div className="space-y-2">
+
+    <p>
+
+      Current Readiness:
+
+      <strong>
+
+        {" "}
+
+        {currentReadiness}%
+
+      </strong>
+
+    </p>
+
+    <p>
+
+      Status:
+
+      <strong>
+
+        {" "}
+
+        {readinessStatus}
+
+      </strong>
+
+    </p>
+
+    <p>
+
+      PMP Target:
+
+      <strong> 80%</strong>
+
+    </p>
+
+    <p>
+
+      Gap Remaining:
+
+      <strong>
+
+        {" "}
+
+        {readinessGap}%
+
+      </strong>
+
+    </p>
+
+  </div>
 
         <div className="mt-8 rounded-xl bg-white p-6 shadow">
 
