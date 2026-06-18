@@ -727,6 +727,35 @@ const user =
 
 try {
 
+for (const question of review) {
+
+  await fetch(
+    "/api/results",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type":
+          "application/json",
+      },
+      body: JSON.stringify({
+        userId:
+          user.id || 1,
+        questionId:
+          question.id,
+        selectedAnswer:
+          question.userAnswer || "",
+        correctAnswer:
+          question.correctAnswer,
+        isCorrect:
+          question.isCorrect,
+        knowledgeArea:
+          question.knowledgeArea,
+      }),
+    },
+  );
+
+}
+
   await fetch(
     "/api/exam-results",
     {

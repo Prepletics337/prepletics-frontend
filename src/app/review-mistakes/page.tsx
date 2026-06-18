@@ -9,18 +9,13 @@ export default function ReviewMistakesPage() {
 
   useEffect(() => {
 
-    const savedQuestions =
-      localStorage.getItem(
-        "prepletics-review-mistakes",
-      );
-
-    if (!savedQuestions) return;
-
-    setQuestions(
-      JSON.parse(
-        savedQuestions,
-      ),
-    );
+fetch(
+  "/api/results/review",
+)
+  .then((res) => res.json())
+  .then((data) => {
+    setQuestions(data);
+  });
 
   }, []);
 
@@ -66,8 +61,8 @@ export default function ReviewMistakesPage() {
                   <div className="text-red-700 mb-2">
                     Your Answer:
                     {" "}
-                    {question.userAnswer ||
-                      "Not Answered"}
+                     {question.selectedAnswer ||
+                     "Not Answered"}
                   </div>
 
                   <div className="text-green-700 mb-2">

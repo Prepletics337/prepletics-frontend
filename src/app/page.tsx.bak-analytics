@@ -61,92 +61,92 @@ fetch(
         JSON.parse(storedUser),
       );
     }
+const savedHistory =
+  localStorage.getItem(
+    "prepletics-exam-history",
+  );
 
-  fetch(
-    "/api/exam-results",
-  )
-    .then((res) => res.json())
-    .then((results) => {
+if (savedHistory) {
 
-      const history =
-        results.map(
-          (exam: any) => ({
-            date:
-              new Date(
-                exam.createdAt,
-              ).toLocaleDateString(),
-            score:
-              exam.score,
-          }),
-        );
+  setExamHistory(
+    JSON.parse(savedHistory),
+  );
 
-      setExamHistory(
-        history,
-      );
+}
 
-      const latestExam =
-        results[
-          results.length - 1
-        ];
+const savedAreas =
+  localStorage.getItem(
+    "prepletics-knowledge-areas",
+  );
 
-      if (
-        latestExam &&
-        latestExam.knowledgeAreas
-      ) {
+if (savedAreas) {
 
-        const formatted =
-          Object.entries(
-            latestExam.knowledgeAreas,
-          ).map(
-            ([name, stats]: any) => ({
-              knowledgeArea:
-                name,
-              percentage:
-                Math.round(
-                  (stats.correct /
-                    stats.total) *
-                    100,
-                ),
-            }),
-          );
+  const parsed =
+    JSON.parse(
+      savedAreas,
+    );
 
-        setKnowledgeAreaPerformance(
-          formatted,
-        );
+  const formatted =
+    Object.entries(
+      parsed,
+    ).map(
+      ([name, stats]: any) => ({
+        knowledgeArea:
+          name,
+        percentage:
+          Math.round(
+            (stats.correct /
+              stats.total) *
+              100,
+          ),
+      }),
+    );
 
-        if (
-          formatted.length > 0
-        ) {
+  setKnowledgeAreaPerformance(
+    formatted,
+  );
 
-          const strongest =
-            [...formatted].sort(
-              (a, b) =>
-                b.percentage -
-                a.percentage,
-            )[0];
+if (formatted.length > 0) {
 
-          const weakest =
-            [...formatted].sort(
-              (a, b) =>
-                a.percentage -
-                b.percentage,
-            )[0];
+    const strongest =
 
-          setStrongestArea(
-            strongest,
-          );
+      [...formatted].sort(
 
-          setWeakestArea(
-            weakest,
-          );
+        (a, b) =>
 
-        }
+          b.percentage -
 
-      }
+          a.percentage,
 
-    });
+      )[0];
 
+    const weakest =
 
+      [...formatted].sort(
+
+        (a, b) =>
+
+          a.percentage -
+
+          b.percentage,
+
+      )[0];
+
+    setStrongestArea(
+
+      strongest,
+
+    );
+
+    setWeakestArea(
+
+      weakest,
+
+    );
+
+  }
+
+}
   }, []);
 
 const logout = () => {
