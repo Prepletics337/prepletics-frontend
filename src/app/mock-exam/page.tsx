@@ -583,6 +583,14 @@ function resumeExam() {
 
 async function finishExam() {
 
+console.log(
+
+    "finishExam called",
+
+    new Date().toISOString()
+
+  );
+
   let correct = 0;
 
   const review: any[] = [];
@@ -725,6 +733,14 @@ const user =
     ) || "{}",
   );
 
+console.log(
+
+  "Exam Save User",
+
+  user,
+
+);
+
 try {
 
 for (const question of review) {
@@ -756,6 +772,19 @@ for (const question of review) {
 
 }
 
+console.log(
+
+  "Submitting Exam",
+
+  {
+
+    userId: user.id,
+
+    score,
+
+  },
+
+);
   await fetch(
     "/api/exam-results",
     {

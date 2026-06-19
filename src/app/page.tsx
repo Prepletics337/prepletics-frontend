@@ -238,12 +238,26 @@ const readinessStatus =
             </p>
           </div>
 
-          <button
-            onClick={logout}
-            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
-          >
-            Logout
-          </button>
+        {user ? (
+
+  <button
+    onClick={logout}
+    className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+  >
+    Logout
+  </button>
+
+) : (
+
+  <a
+    href="/login"
+    className="bg-lime-600 text-white px-4 py-2 rounded-lg hover:bg-lime-700"
+  >
+    Login
+  </a>
+
+)}
+
 
         </div>
       </header>

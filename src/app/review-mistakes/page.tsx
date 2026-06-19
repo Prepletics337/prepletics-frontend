@@ -7,17 +7,27 @@ export default function ReviewMistakesPage() {
   const [questions, setQuestions] =
     useState<any[]>([]);
 
-  useEffect(() => {
 
-fetch(
-  "/api/results/review",
-)
-  .then((res) => res.json())
-  .then((data) => {
-    setQuestions(data);
-  });
+useEffect(() => {
 
-  }, []);
+  const user =
+    JSON.parse(
+      localStorage.getItem(
+        "prepleticsUser",
+      ) || "{}",
+    );
+
+  if (!user.id) return;
+
+  fetch(
+    `/api/results/review?userId=${user.id}`,
+  )
+    .then((res) => res.json())
+    .then((data) => {
+      setQuestions(data);
+    });
+
+}, []);
 
   return (
 
