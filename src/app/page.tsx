@@ -48,13 +48,22 @@ const [dashboardStats, setDashboardStats] =
       localStorage.getItem(
         "prepleticsUser",
       );
-fetch(
-  "/api/exam-results/stats",
-)
-  .then((res) => res.json())
-  .then((data) => {
-    setDashboardStats(data);
-  });
+if (storedUser) {
+
+  const user =
+    JSON.parse(
+      storedUser,
+    );
+
+  fetch(
+    `/api/exam-results/stats?userId=${user.id}`,
+  )
+    .then((res) => res.json())
+    .then((data) => {
+      setDashboardStats(data);
+    });
+
+}
 
     if (storedUser) {
       setUser(
@@ -62,9 +71,15 @@ fetch(
       );
     }
 
-  fetch(
-    "/api/exam-results",
-  )
+const user =
+  JSON.parse(
+    storedUser || "{}",
+  );
+
+fetch(
+  `/api/exam-results?userId=${user.id}`,
+)
+
     .then((res) => res.json())
     .then((results) => {
 

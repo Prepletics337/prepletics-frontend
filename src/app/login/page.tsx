@@ -16,7 +16,7 @@ export default function LoginPage() {
       setLoading(true);
 
       const response = await fetch(
-        "http://2.25.173.35:3001/auth/login",
+        "/api/auth/login",
         {
           method: "POST",
           headers: {

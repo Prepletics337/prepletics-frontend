@@ -24,7 +24,7 @@ export default function RegisterPage() {
       setLoading(true);
 
       const response = await fetch(
-        "http://2.25.173.35:3001/auth/register",
+         "/api/auth/register",
         {
           method: "POST",
           headers: {
