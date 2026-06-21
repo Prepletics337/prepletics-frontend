@@ -43,17 +43,22 @@ const [dashboardStats, setDashboardStats] =
     readinessScore: 0,
   });
 
-  useEffect(() => {
-    const storedUser =
-      localStorage.getItem(
-        "prepleticsUser",
-      );
-if (storedUser) {
+
+useEffect(() => {
+
+  const storedUser =
+    localStorage.getItem(
+      "prepleticsUser",
+    );
+
+  if (!storedUser) {
+    return;
+  }
 
   const user =
-    JSON.parse(
-      storedUser,
-    );
+    JSON.parse(storedUser);
+
+  setUser(user);
 
   fetch(
     `/api/exam-results/stats?userId=${user.id}`,
@@ -63,22 +68,10 @@ if (storedUser) {
       setDashboardStats(data);
     });
 
-}
+  fetch(
+    `/api/exam-results?userId=${user.id}`,
+  )
 
-    if (storedUser) {
-      setUser(
-        JSON.parse(storedUser),
-      );
-    }
-
-const user =
-  JSON.parse(
-    storedUser || "{}",
-  );
-
-fetch(
-  `/api/exam-results?userId=${user.id}`,
-)
 
     .then((res) => res.json())
     .then((results) => {

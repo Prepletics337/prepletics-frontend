@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 export default function MockExamPage() {
   const [questions, setQuestions] =
@@ -18,8 +18,13 @@ export default function MockExamPage() {
 const [examFinished, setExamFinished] =
   useState(false);
 
+const [isSubmitting, setIsSubmitting] =
+  useState(false);
+const submittingRef = useRef(false);
+
 const [examResults, setExamResults] =
   useState<any>(null);
+
 
 const [reviewFilter, setReviewFilter] =
   useState("all");
@@ -583,16 +588,25 @@ function resumeExam() {
 
 async function finishExam() {
 
-console.log(
+  if (submittingRef.current) {
 
+    console.log(
+      "BLOCKED DUPLICATE SUBMISSION"
+    );
+
+    return;
+  }
+
+  submittingRef.current = true;
+
+  setIsSubmitting(true);
+
+  console.log(
     "finishExam called",
-
     new Date().toISOString()
-
   );
 
   let correct = 0;
-
   const review: any[] = [];
 const knowledgeAreaStats:
   Record<
@@ -1097,7 +1111,11 @@ const remainingCount =
 questions.length - 1 ? (
 
   <button
-    onClick={finishExam}
+    onClick={() => {
+  if (!isSubmitting) {
+    finishExam();
+  }
+}}
     className="bg-red-600 text-white px-6 py-3 rounded-lg"
   >
     Finish Exam
