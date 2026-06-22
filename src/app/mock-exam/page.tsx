@@ -288,7 +288,7 @@ if (examFinished) {
 
               </h2>
 
-<div className="flex gap-4 mb-6">
+<div className="flex flex-col sm:flex-row gap-4 mb-6">
 
   <button
     onClick={() =>
