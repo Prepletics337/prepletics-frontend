@@ -1,7 +1,7 @@
 "use client";
 
-
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 import {
   LineChart,
@@ -220,16 +220,24 @@ const readinessStatus =
     <main className="min-h-screen bg-slate-50">
       <header className="border-b bg-white">
         <div className="mx-auto max-w-7xl px-6 py-5 flex justify-between items-center">
+      
+      <div className="flex items-center gap-3">
+      <Image
 
-          <div>
-            <h1 className="text-3xl font-bold text-lime-600">
-              Prepletics
-            </h1>
+      src="/images/prepletics-logo.png"
 
-            <p className="text-gray-600">
-              Train Smarter. Pass Faster.
-            </p>
-          </div>
+      alt="Prepletics"
+
+      width={280}
+
+      height={60}
+
+      className="object-contain"
+
+    />
+
+</div>
+
 
         {user ? (
 

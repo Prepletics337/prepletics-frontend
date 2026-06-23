@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -55,9 +56,20 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-slate-200 flex">
       <div className="hidden lg:flex w-1/2 bg-slate-900 text-white p-12 flex-col justify-center">
-        <h1 className="text-5xl font-bold mb-4">
-          Prepletics
-        </h1>
+
+      <div className="flex items-center gap-4 mb-6">
+
+<div className="mb-8">
+  <Image
+    src="/images/prepletics-logo-main.png"
+    alt="Prepletics"
+    width={380}
+    height={90}
+    priority
+  />
+</div>
+
+</div>
 
         <p className="text-2xl mb-8">
           Train Smarter. Pass Faster.
