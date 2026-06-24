@@ -16,6 +16,36 @@ export const metadata: Metadata = {
   title: "Prepletics | PMP Exam Simulator",
   description:
     "Train Smarter. Pass Faster. Practice PMP mock exams, track readiness scores, analyze weak knowledge areas, and prepare confidently for certification success.",
+icons: {
+
+    icon: "/favicon.png",
+
+  },
+openGraph: {
+  title: "Prepletics | PMP Exam Simulator",
+  description:
+    "Train Smarter. Pass Faster. Practice PMP mock exams and track your readiness score.",
+  url: "https://prepletics.com",
+  siteName: "Prepletics",
+  images: [
+    {
+      url: "https://prepletics.com/images/og-image.png",
+      width: 1200,
+      height: 630,
+      alt: "Prepletics PMP Exam Simulator",
+    },
+  ],
+  locale: "en_US",
+  type: "website",
+},
+
+twitter: {
+  card: "summary_large_image",
+  title: "Prepletics | PMP Exam Simulator",
+  description:
+    "Train Smarter. Pass Faster.",
+  images: ["https://prepletics.com/images/og-image.png"],
+},
   keywords: [
     "PMP",
     "PMP Exam",
@@ -52,11 +82,13 @@ export default function RootLayout({
         © 2026 Prepletics. All rights reserved.
       </div>
 
-      <div className="flex justify-center gap-6">
-        <a href="/privacy">Privacy Policy</a>
-        <a href="/terms">Terms of Service</a>
-        <a href="/contact">Contact Us</a>
-      </div>
+  <div className="flex justify-center gap-6 flex-wrap">
+  <a href="/about">About Us</a>
+  <a href="/privacy">Privacy Policy</a>
+  <a href="/terms">Terms of Service</a>
+  <a href="/contact">Contact Us</a>
+</div>
+
 
     </div>
   </footer>
